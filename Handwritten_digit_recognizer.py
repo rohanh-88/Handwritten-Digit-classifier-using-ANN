@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 # ann assignment: handwritten digit classifier using neural network
 # necessary modules being imported into the script
 import matplotlib.pyplot as plt  # for plotting the image data as a graph
@@ -22,21 +16,12 @@ import PIL
 import os
 import tensorflow as tf
 import pandas as pd
-import random
-rgb_weights = [0.2989, 0.5870, 0.1140]  # for grayscale conversion
-training_images = []
-test_images = []
-training_tags = []
-test_tags = []
 batch_size = 5
 img_height = 28
 img_width = 28
+dataset_path = r" *enter the path of the downloaded data set here* "
 
-
-# In[2]:
-
-
-def image_flattening(path):
+def image_preprocessing_for_testing(path):
     '''this function is for feeding a well shaped image for model evaluation post training '''
     an_image = matplotlib.image.imread(path)
     plt.imshow(an_image, cmap=plt.get_cmap("gray"))
@@ -46,15 +31,12 @@ def image_flattening(path):
     return img2_data
 
 
-# In[3]:
-
-
 filenames = []
-for dire, path, filey in os.walk(r"C:\Users\User\Downloads\ann_paint_dataset-20201123T074433Z-001\ann_paint_dataset"):
+for dire, path, filey in os.walk(dataset_path):
     for ft in filey:
         filenames.append(ft)
 categories = []
-fi = r"C:\Users\User\Downloads\ann_paint_dataset-20201123T074433Z-001\ann_paint_dataset"
+fi = r"* please enter the dataset folders path here*"
 for i in range(10):
     for dire, pathy, fille1 in os.walk(os.path.join(fi,str(i))):
         for fty in fille1:
@@ -86,43 +68,30 @@ df = pd.DataFrame({
 # creating the pandas data frame of images and their respective labels(categories)
 
 
-# In[4]:
-
-
 df.head()
 # printing the top most entries of the dataframe
-
-
-# In[5]:
 
 
 df.tail()
 # printing the lower most entries of the data frame
 
 
-# In[6]:
-
-
 df['category'].value_counts().plot.bar()
 # pictorial representation of the size of categories in the data set used
 
 
-# In[7]:
 
-
-image = load_img(r"C:\Users\User\Downloads\ann_paint_dataset-20201123T074433Z-001\ann_paint_dataset\7\_7_.jpg")
+image = load_img(r"*path of an image in the downloaded dataset*")
 plt.imshow(image)
 # printing a random image from the training dataset
 
-
-# In[8]:
 
 
 # using tensorflows built it function to generate dataset from images and splitting the 
 # dataset into train and validation subparts
 #1. generating train data set from input images
 train_ds = tf.keras.preprocessing.image_dataset_from_directory(
-    r"C:\Users\User\Downloads\ann_paint_dataset-20201123T074433Z-001\ann_paint_dataset",
+    dataset_path,
     label_mode='categorical',
     validation_split=0.2,
     subset="training",
@@ -131,7 +100,7 @@ train_ds = tf.keras.preprocessing.image_dataset_from_directory(
     batch_size=batch_size)
 #2. generating validation(test) dataset from input images
 val_ds = tf.keras.preprocessing.image_dataset_from_directory(
-    r"C:\Users\User\Downloads\ann_paint_dataset-20201123T074433Z-001\ann_paint_dataset",
+    dataset_path,
     label_mode='categorical',
     validation_split=0.2,
     subset="validation",
@@ -140,15 +109,11 @@ val_ds = tf.keras.preprocessing.image_dataset_from_directory(
     batch_size=batch_size)
 
 
-# In[9]:
-
 
 # building the neural network model:
 # 1. the neural network will consist of 7 layers, 2  convolution layers 2 maxpool layers, flattening layer
 # and 2 dense layers.
 # 2. last layer with 10 neurons, each for a digit from 0-9.
-
-
 
 
 
@@ -202,8 +167,6 @@ classifier_model.summary()
 #classifier_model.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics = ['accuracy'])
 
 
-# In[10]:
-
 
 # compiling the model of the above neural network; by using an optimizer and
 # a loss function; a loss function is to evaluate the performance and indicate
@@ -217,8 +180,6 @@ classifier_model.compile(
 )
 
 
-# In[11]:
-
 
 # training the above built neural network
 history = classifier_model.fit_generator(
@@ -229,16 +190,12 @@ history = classifier_model.fit_generator(
     )
 
 
-# In[12]:
-
 
 # evaluate the model over the test data set
 hist = classifier_model.evaluate(
     val_ds,
 )
 
-
-# In[13]:
 
 
 # plotting a graph representing the metrics of the model
@@ -251,25 +208,19 @@ plt.legend(['Train','Val'],loc='upper left')
 plt.show()
 
 
-# In[14]:
-
 
 classifier_model.save(r"C:\Users\User\Downloads")
 # saving the entire model
 
 
-# In[15]:
 
-
-prediction = classifier_model.predict(image_flattening(r"C:\Users\User\Downloads\6\6.jpeg"))
+prediction = classifier_model.predict(image_preprocessing_for_testing(r"C:\Users\User\Downloads\6\6.jpeg"))
 # the above line is  where an image of the size 28*28 pixels path can be provided for evaluation
 print(prediction)  # the list of probabilities of the input being the respective number
 print(np.argmax(prediction, axis = 1))
 # the neuron with highest probability that is close to 1 is the output i.e. the prediciton of the 
 # handwritten digit in the image provided
 
-
-# In[ ]:
 
 
 
